@@ -9,7 +9,7 @@
           <td>{{ item.description }}</td>
           <td><span class="badge">{{ item.category }}</span></td>
           <td>{{ formatDate(item.date) }}</td>
-          <td>{{ formatMoney(item.amount) }}</td>
+          <td>{{ formatMoney(item.value) }}</td>
           <td class="actions">
             <button class="small" @click="$emit('edit', item)">Editar</button>
             <button class="small danger" @click="$emit('delete', item.id)">Excluir</button>

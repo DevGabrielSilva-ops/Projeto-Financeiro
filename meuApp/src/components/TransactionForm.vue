@@ -1,7 +1,7 @@
 <template>
   <form class="form-grid" @submit.prevent="submit">
     <input v-model="form.description" required placeholder="Descrição" />
-    <input v-model.number="form.amount" required min="0.01" step="0.01" type="number" placeholder="Valor" />
+    <input v-model.number="form.value" required min="0.01" step="0.01" type="number" placeholder="Valor" />
     <input v-model="form.date" required type="date" />
     <select v-model="form.category" required>
       <option value="" disabled>Categoria</option>

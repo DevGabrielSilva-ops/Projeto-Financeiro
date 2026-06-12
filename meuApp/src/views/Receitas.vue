@@ -11,6 +11,7 @@
       <h2>{{ editing ? "Editar receita" : "Adicionar receita" }}</h2>
 
       <TransactionForm
+        :key="editing?.id || 'novo'"
         :categories="categories"
         :editing="editing || {}"
         submit-label="Salvar receita"
