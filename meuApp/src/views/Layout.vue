@@ -40,13 +40,19 @@
 </template>
 
 <script setup>
-import { useRouter } from "vue-router"
 import { signOut as firebaseSignOut } from "firebase/auth"
 import { auth } from "../services/firebase"
+import { onMounted } from "vue"
+import { useRouter } from "vue-router"
+
+
+
 
 const router = useRouter()
 async function signOut() {
   await firebaseSignOut(auth)
   router.push("/login")
 }
+
+
 </script>
