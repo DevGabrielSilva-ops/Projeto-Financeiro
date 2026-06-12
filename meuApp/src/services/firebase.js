@@ -1,21 +1,17 @@
-// Integração Firebase pronta para você preencher depois.
-// 1. Crie um projeto no Firebase.
-// 2. Ative Authentication e Firestore.
-// 3. Cole suas credenciais abaixo.
+import { initializeApp } from "firebase/app"
+import { getAuth } from "firebase/auth"
+import { getFirestore } from "firebase/firestore"
 
-// import { initializeApp } from 'firebase/app'
-// import { getAuth } from 'firebase/auth'
-// import { getFirestore } from 'firebase/firestore'
-
-export const firebaseConfig = {
-  apiKey: '',
-  authDomain: '',
-  projectId: '',
-  storageBucket: '',
-  messagingSenderId: '',
-  appId: '',
+const firebaseConfig = {
+  apiKey: "AIzaSyCdTLz7YeCDHbiAlZ894UnrG1yoV8LIoiU",
+  authDomain: "projeto-financeiro-70404.firebaseapp.com",
+  projectId: "projeto-financeiro-70404",
+  storageBucket: "projeto-financeiro-70404.firebasestorage.app",
+  messagingSenderId: "781467551383",
+  appId: "1:781467551383:web:f3cf5e161734f0fd4a0bd2"
 }
 
-// const app = initializeApp(firebaseConfig)
-// export const auth = getAuth(app)
-// export const db = getFirestore(app)
+const app = initializeApp(firebaseConfig)
+
+export const auth = getAuth(app)
+export const db = getFirestore(app)

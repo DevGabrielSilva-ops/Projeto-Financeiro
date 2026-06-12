@@ -1,48 +1,116 @@
-import { getData, setData } from './storage'
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where
+} from "firebase/firestore"
 
-export function listFinance() {
-  const data = getData()
+import { auth, db } from "./firebase"
+
+function getUserId() {
+  return auth.currentUser?.uid
+}
+
+function normalizeValue(value) {
+  const raw = value ?? 0
+
+  const formatted = String(raw)
+    .replace("R$", "")
+    .replace(/\./g, "")
+    .replace(",", ".")
+    .trim()
+
+  return Number(formatted) || 0
+}
+
+function formatTransaction(item) {
   return {
-    incomes: data.incomes || [],
-    expenses: data.expenses || [],
-    categories: data.categories || [],
+    description: item.description ?? item.descricao ?? "",
+    value: normalizeValue(item.value ?? item.valor ?? item.amount),
+    category: item.category ?? item.categoria ?? "Outros",
+    date: item.date ?? item.data ?? new Date().toISOString().slice(0, 10),
+    usuarioId: getUserId()
   }
 }
 
-export function saveIncome(item) {
-  const data = getData()
-  if (item.id) data.incomes = data.incomes.map((i) => (i.id === item.id ? item : i))
-  else data.incomes.push({ ...item, id: crypto.randomUUID() })
-  setData(data)
+export async function listIncomes() {
+  const userId = getUserId()
+  if (!userId) return []
+
+  const q = query(
+    collection(db, "receitas"),
+    where("usuarioId", "==", userId)
+  )
+
+  const snapshot = await getDocs(q)
+
+  return snapshot.docs
+    .map((documento) => ({
+      id: documento.id,
+      ...documento.data()
+    }))
+    .sort((a, b) => String(b.date).localeCompare(String(a.date)))
 }
 
-export function deleteIncome(id) {
-  const data = getData()
-  data.incomes = data.incomes.filter((i) => i.id !== id)
-  setData(data)
+export async function saveIncome(item) {
+  const userId = getUserId()
+
+  if (!userId) {
+    throw new Error("Usuário não autenticado.")
+  }
+
+  const data = formatTransaction(item)
+
+  if (item.id) {
+    await updateDoc(doc(db, "receitas", item.id), data)
+  } else {
+    await addDoc(collection(db, "receitas"), data)
+  }
 }
 
-export function saveExpense(item) {
-  const data = getData()
-  if (item.id) data.expenses = data.expenses.map((i) => (i.id === item.id ? item : i))
-  else data.expenses.push({ ...item, id: crypto.randomUUID() })
-  setData(data)
+export async function deleteIncome(id) {
+  await deleteDoc(doc(db, "receitas", id))
 }
 
-export function deleteExpense(id) {
-  const data = getData()
-  data.expenses = data.expenses.filter((i) => i.id !== id)
-  setData(data)
+export async function listExpenses() {
+  const userId = getUserId()
+  if (!userId) return []
+
+  const q = query(
+    collection(db, "despesas"),
+    where("usuarioId", "==", userId)
+  )
+
+  const snapshot = await getDocs(q)
+
+  return snapshot.docs
+    .map((documento) => ({
+      id: documento.id,
+      ...documento.data()
+    }))
+    .sort((a, b) => String(b.date).localeCompare(String(a.date)))
 }
 
-export function saveCategory(name) {
-  const data = getData()
-  if (!data.categories.includes(name)) data.categories.push(name)
-  setData(data)
+export async function saveExpense(item) {
+  const userId = getUserId()
+
+  if (!userId) {
+    throw new Error("Usuário não autenticado.")
+  }
+
+  const data = formatTransaction(item)
+
+  if (item.id) {
+    await updateDoc(doc(db, "despesas", item.id), data)
+  } else {
+    await addDoc(collection(db, "despesas"), data)
+  }
 }
 
-export function deleteCategory(name) {
-  const data = getData()
-  data.categories = data.categories.filter((c) => c !== name)
-  setData(data)
+export async function deleteExpense(id) {
+  await deleteDoc(doc(db, "despesas", id))
 }

@@ -1,23 +1,52 @@
 <template>
   <div class="app-shell">
     <aside class="sidebar">
-      <h2>Meu Financeiro</h2>
+      <img class="img-logo" src="../../public/Logo.png" alt="">
       <nav>
-        <RouterLink to="/dashboard">Dashboard</RouterLink>
-        <RouterLink to="/receitas">Receitas</RouterLink>
-        <RouterLink to="/despesas">Despesas</RouterLink>
-        <RouterLink to="/categorias">Categorias</RouterLink>
-        <RouterLink to="/relatorios">Relatórios</RouterLink>
-        <RouterLink to="/perfil">Perfil</RouterLink>
+        <RouterLink to="/dashboard">
+        <ion-icon name="grid-outline"></ion-icon>
+          Dashboard
+        </RouterLink>
+        
+        <RouterLink to="/receitas">
+        <ion-icon name="cash-outline"></ion-icon>
+          Receitas
+        </RouterLink>
+        
+        <RouterLink to="/despesas">
+        <ion-icon name="wallet-outline"></ion-icon>  
+          Despesas
+        </RouterLink>
+        
+        <RouterLink to="/categorias">
+        <ion-icon name="pricetags-outline"></ion-icon>  
+          Categorias
+        </RouterLink>
+        
+        <RouterLink to="/relatorios">
+        <ion-icon name="bar-chart-outline"></ion-icon>  
+          Relatórios
+        </RouterLink>
+        
       </nav>
-      <button class="logout" @click="signOut">Sair</button>
+      
+      <div class="log-out">
+        <RouterLink to="/perfil"><ion-icon class="perfi" name="person-circle-outline"></ion-icon></RouterLink>
+        <button class="logout" @click="signOut"><ion-icon class="logout" name="log-out-outline"></ion-icon></button>
+      </div>
     </aside>
     <section class="content"><RouterView /></section>
   </div>
 </template>
+
 <script setup>
-import { useRouter } from 'vue-router'
-import { logout } from '../services/authService'
+import { useRouter } from "vue-router"
+import { signOut as firebaseSignOut } from "firebase/auth"
+import { auth } from "../services/firebase"
+
 const router = useRouter()
-function signOut() { logout(); router.push('/login') }
+async function signOut() {
+  await firebaseSignOut(auth)
+  router.push("/login")
+}
 </script>

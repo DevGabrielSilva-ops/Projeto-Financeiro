@@ -1,37 +1,48 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import { getCurrentUser } from '../services/authService'
-import Auth from '../views/Auth.vue'
-import Layout from '../views/Layout.vue'
-import Dashboard from '../views/Dashboard.vue'
-import Receitas from '../views/Receitas.vue'
-import Despesas from '../views/Despesas.vue'
-import Categorias from '../views/Categorias.vue'
-import Relatorios from '../views/Relatorios.vue'
-import Perfil from '../views/Perfil.vue'
+import { createRouter, createWebHistory } from "vue-router"
+import { getAuth, onAuthStateChanged } from "firebase/auth"
+
+import Auth from "../views/Auth.vue"
+import Layout from "../views/Layout.vue"
+import Dashboard from "../views/Dashboard.vue"
+import Receitas from "../views/Receitas.vue"
+import Despesas from "../views/Despesas.vue"
+import Categorias from "../views/Categorias.vue"
+import Relatorios from "../views/Relatorios.vue"
+import Perfil from "../views/Perfil.vue"
 
 const routes = [
-  { path: '/', redirect: '/dashboard' },
-  { path: '/login', component: Auth },
+  { path: "/", redirect: "/dashboard" },
+  { path: "/login", component: Auth },
   {
-    path: '/',
+    path: "/",
     component: Layout,
     meta: { requiresAuth: true },
     children: [
-      { path: 'dashboard', component: Dashboard },
-      { path: 'receitas', component: Receitas },
-      { path: 'despesas', component: Despesas },
-      { path: 'categorias', component: Categorias },
-      { path: 'relatorios', component: Relatorios },
-      { path: 'perfil', component: Perfil },
-    ],
-  },
+      { path: "dashboard", component: Dashboard },
+      { path: "receitas", component: Receitas },
+      { path: "despesas", component: Despesas },
+      { path: "categorias", component: Categorias },
+      { path: "relatorios", component: Relatorios },
+      { path: "perfil", component: Perfil }
+    ]
+  }
 ]
 
 const router = createRouter({ history: createWebHistory(), routes })
 
-router.beforeEach((to) => {
-  if (to.meta.requiresAuth && !getCurrentUser()) return '/login'
-  if (to.path === '/login' && getCurrentUser()) return '/dashboard'
+function getCurrentUser() {
+  return new Promise((resolve, reject) => {
+    const removeListener = onAuthStateChanged(getAuth(), (user) => {
+      removeListener()
+      resolve(user)
+    }, reject)
+  })
+}
+
+router.beforeEach(async (to) => {
+  const user = await getCurrentUser()
+  if (to.meta.requiresAuth && !user) return "/login"
+  if (to.path === "/login" && user) return "/dashboard"
 })
 
 export default router
